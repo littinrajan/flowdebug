@@ -1,16 +1,37 @@
 # FlowDebug
 
-FlowDebug is an execution tracing and visualization toolkit for Python.
+> Interactive execution tracing and visualization toolkit for Python.
 
-## Features
+FlowDebug helps developers understand how their Python applications execute by capturing function calls, variable changes, execution timelines, and performance metrics.
+
+> 🚧 This project is currently under active development.
+
+## Features (Planned)
 
 - Function call tracing
 - Variable inspection
-- Timeline visualization
-- HTML reports
+- Execution timeline
+- Interactive HTML reports
 - Plugin architecture
-- AI-powered execution analysis
+- FastAPI integration
+- Django integration
+- SQLAlchemy integration
+- AI-assisted execution analysis
 
-## Status
+## Installation
 
-🚧 Under active development.
+```bash
+pip install -e .
+```
+
+## Development
+
+Install development dependencies.
+
+```bash
+pip install -e ".[dev]"
+```
+
+## License
+
+MIT License

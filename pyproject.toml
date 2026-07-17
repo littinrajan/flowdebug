@@ -1,0 +1,63 @@
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "flowdebug"
+version = "0.1.0"
+description = "Interactive execution tracing and visualization toolkit for Python."
+readme = "README.md"
+requires-python = ">=3.11"
+
+authors = [
+    { name = "Littin Rajan" }
+]
+
+license = { text = "MIT" }
+
+keywords = [
+    "debugger",
+    "tracer",
+    "visualizer",
+    "profiler",
+    "python"
+]
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent"
+]
+
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3",
+    "pytest-cov>=6.0",
+    "ruff>=0.12",
+    "mypy>=1.17",
+]
+
+[project.urls]
+Homepage = "https://github.com/littinrajan/flowdebug"
+Repository = "https://github.com/littinrajan/flowdebug"
+Issues = "https://github.com/littinrajan/flowdebug/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["flowdebug"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
