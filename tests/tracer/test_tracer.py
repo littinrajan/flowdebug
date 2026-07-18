@@ -78,3 +78,57 @@ def test_records_call_and_return_events() -> None:
 
     assert EventType.CALL in event_types
     assert EventType.RETURN in event_types
+
+
+def test_records_exception_event() -> None:
+    """
+    Function exception events are recorded.
+    """
+
+    def sample() -> None:
+        raise ValueError("boom")
+
+    with trace() as tracer:
+        try:
+            sample()
+        except ValueError:
+            pass
+
+    events = [
+        event
+        for event in tracer.recorder.events()
+        if event.event_type is EventType.EXCEPTION
+        and event.name == "sample"
+    ]
+
+    assert len(events) == 1
+
+    event = events[0]
+
+    assert event.metadata["exception_type"] == "ValueError"
+    assert event.metadata["exception_message"] == "boom"
+
+
+def test_records_call_exception_and_return_events() -> None:
+    """
+    Call, exception and return events are recorded.
+    """
+
+    def sample() -> None:
+        raise RuntimeError("failure")
+
+    with trace() as tracer:
+        try:
+            sample()
+        except RuntimeError:
+            pass
+
+    event_types = [
+        event.event_type
+        for event in tracer.recorder.events()
+        if event.name == "sample"
+    ]
+
+    assert EventType.CALL in event_types
+    assert EventType.EXCEPTION in event_types
+    assert EventType.RETURN in event_types

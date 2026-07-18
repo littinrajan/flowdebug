@@ -44,8 +44,6 @@ class Tracer:
         event: str,
         arg: Any,
     ) -> Any:
-        _ = arg
-
         if event == "call":
             self._record_call(frame)
         elif event == "return":
@@ -97,7 +95,11 @@ class Tracer:
     def _record_exception(
         self,
         frame: FrameType,
-        arg: tuple[type[BaseException], BaseException, TracebackType | None],
+        arg: tuple[
+            type[BaseException],
+            BaseException,
+            TracebackType | None,
+        ],
     ) -> None:
         """
         Record a function exception event.
