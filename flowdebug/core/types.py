@@ -4,7 +4,7 @@ Shared type aliases used throughout FlowDebug.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, TypeAlias
 
-Metadata = dict[str, Any]
-Variables = dict[str, Any]
+Metadata: TypeAlias = dict[str, Any]
+Variables: TypeAlias = dict[str, Any]
