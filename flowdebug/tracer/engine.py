@@ -54,19 +54,7 @@ class Tracer:
         """
         Trace execution events.
         """
-        module = str(frame.f_globals.get("__name__", ""))
-
-        if not self._should_trace_module(module):
-            return self._trace
-
-        file = Path(frame.f_code.co_filename)
-
-        if not self._should_trace_file(file):
-            return self._trace
-
-        function = frame.f_code.co_name
-
-        if not self._should_trace_function(function):
+        if not self._should_trace(frame):
             return self._trace
 
         if event == "call":
@@ -197,3 +185,17 @@ class Tracer:
             return not function.startswith(exclude)
 
         return True
+
+    def _should_trace(self, frame: FrameType) -> bool:
+        """
+        Determine whether a frame should be traced.
+        """
+        module = str(frame.f_globals.get("__name__", ""))
+        file = Path(frame.f_code.co_filename)
+        function = frame.f_code.co_name
+
+        return (
+            self._should_trace_module(module)
+            and self._should_trace_file(file)
+            and self._should_trace_function(function)
+        )
