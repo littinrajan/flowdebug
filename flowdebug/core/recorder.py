@@ -4,19 +4,21 @@ Recorder interfaces.
 
 from __future__ import annotations
 
-from typing import Protocol
+from collections.abc import Sequence
+from typing import Protocol, runtime_checkable
 
 from .events import Event
 
 
+@runtime_checkable
 class Recorder(Protocol):
     """
-    Common interface implemented by every recorder.
+    Common interface implemented by every FlowDebug recorder.
     """
 
     def record(self, event: Event) -> None:
         """
-        Store a single execution event.
+        Record a single execution event.
         """
         ...
 
@@ -26,8 +28,8 @@ class Recorder(Protocol):
         """
         ...
 
-    def events(self) -> list[Event]:
+    def events(self) -> Sequence[Event]:
         """
-        Return recorded events.
+        Return an immutable view of the recorded events.
         """
         ...
