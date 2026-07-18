@@ -48,6 +48,8 @@ class Tracer:
 
         if event == "call":
             self._record_call(frame)
+        elif event == "return":
+            self._record_return(frame, arg)
 
         return self._trace
 
@@ -67,3 +69,25 @@ class Tracer:
             )
         )
 
+    def _record_return(
+        self,
+        frame: FrameType,
+        value: Any,
+    ) -> None:
+        """
+        Record a function return event.
+        """
+        self.recorder.record(
+            Event(
+                event_type=EventType.RETURN,
+                name=frame.f_code.co_name,
+                source=SourceLocation(
+                    file=Path(frame.f_code.co_filename),
+                    line=frame.f_lineno,
+                    function=frame.f_code.co_name,
+                ),
+                metadata={
+                    "return_value": value,
+                },
+            )
+        )
