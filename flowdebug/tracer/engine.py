@@ -59,6 +59,11 @@ class Tracer:
         if not self._should_trace_module(module):
             return self._trace
 
+        file = Path(frame.f_code.co_filename)
+
+        if not self._should_trace_file(file):
+            return self._trace
+
         if event == "call":
             self._record_call(frame)
         elif event == "return":
@@ -149,5 +154,26 @@ class Tracer:
 
         if exclude:
             return not module.startswith(exclude)
+
+        return True
+
+    def _should_trace_file(self, file: Path) -> bool:
+        """
+        Determine whether a file should be traced.
+        """
+        include = self.config.include_files
+        exclude = self.config.exclude_files
+
+        if include:
+            return any(
+                file == path or file.is_relative_to(path)
+                for path in include
+            )
+
+        if exclude:
+            return not any(
+                file == path or file.is_relative_to(path)
+                for path in exclude
+            )
 
         return True

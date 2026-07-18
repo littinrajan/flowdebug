@@ -4,20 +4,21 @@ Configuration for FlowDebug tracing.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from pathlib import Path
 
 
 @dataclass(frozen=True, slots=True)
 class TracerConfig:
     """
-    Configuration options for a tracer.
+    Configuration for execution tracing.
     """
 
-    include_modules: tuple[str, ...] = ()
-    exclude_modules: tuple[str, ...] = ()
+    include_modules: tuple[str, ...] = field(default_factory=tuple)
+    exclude_modules: tuple[str, ...] = field(default_factory=tuple)
 
-    include_files: tuple[str, ...] = ()
-    exclude_files: tuple[str, ...] = ()
+    include_files: tuple[Path, ...] = field(default_factory=tuple)
+    exclude_files: tuple[Path, ...] = field(default_factory=tuple)
 
-    include_functions: tuple[str, ...] = ()
-    exclude_functions: tuple[str, ...] = ()
+    include_functions: tuple[str, ...] = field(default_factory=tuple)
+    exclude_functions: tuple[str, ...] = field(default_factory=tuple)
