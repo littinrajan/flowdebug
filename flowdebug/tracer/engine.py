@@ -16,7 +16,8 @@ from flowdebug.core import (
     SourceLocation,
 )
 from flowdebug.recorder import MemoryRecorder
-from flowdebug.tracer.config import TracerConfig
+
+from .config import TracerConfig
 
 
 class Tracer:
@@ -30,7 +31,7 @@ class Tracer:
         config: TracerConfig | None = None,
     ) -> None:
         self.recorder: Recorder = recorder or MemoryRecorder()
-        self.config = config or TracerConfig()
+        self.config: TracerConfig = config or TracerConfig()
 
     def start(self) -> None:
         """
@@ -50,6 +51,14 @@ class Tracer:
         event: str,
         arg: Any,
     ) -> Any:
+        """
+        Trace execution events.
+        """
+        module = str(frame.f_globals.get("__name__", ""))
+
+        if not self._should_trace_module(module):
+            return self._trace
+
         if event == "call":
             self._record_call(frame)
         elif event == "return":
@@ -127,3 +136,18 @@ class Tracer:
                 },
             )
         )
+
+    def _should_trace_module(self, module: str) -> bool:
+        """
+        Determine whether a module should be traced.
+        """
+        include = self.config.include_modules
+        exclude = self.config.exclude_modules
+
+        if include:
+            return module.startswith(include)
+
+        if exclude:
+            return not module.startswith(exclude)
+
+        return True
