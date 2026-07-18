@@ -2,4 +2,10 @@
 Execution tracing for FlowDebug.
 """
 
-__all__: tuple[str, ...] = ()
+from .context import trace
+from .engine import Tracer
+
+__all__ = (
+    "Tracer",
+    "trace",
+)
