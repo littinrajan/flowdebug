@@ -16,6 +16,7 @@ from flowdebug.core import (
     SourceLocation,
 )
 from flowdebug.recorder import MemoryRecorder
+from flowdebug.tracer.config import TracerConfig
 
 
 class Tracer:
@@ -23,8 +24,13 @@ class Tracer:
     Coordinates execution tracing.
     """
 
-    def __init__(self, recorder: Recorder | None = None) -> None:
+    def __init__(
+        self,
+        recorder: Recorder | None = None,
+        config: TracerConfig | None = None,
+    ) -> None:
         self.recorder: Recorder = recorder or MemoryRecorder()
+        self.config = config or TracerConfig()
 
     def start(self) -> None:
         """
