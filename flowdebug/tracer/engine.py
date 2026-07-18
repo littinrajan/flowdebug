@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from types import FrameType
+from types import FrameType, TracebackType
 from typing import Any
 
 from flowdebug.core import (
@@ -50,6 +50,8 @@ class Tracer:
             self._record_call(frame)
         elif event == "return":
             self._record_return(frame, arg)
+        elif event == "exception":
+            self._record_exception(frame, arg)
 
         return self._trace
 
@@ -88,6 +90,32 @@ class Tracer:
                 ),
                 metadata={
                     "return_value": value,
+                },
+            )
+        )
+
+    def _record_exception(
+        self,
+        frame: FrameType,
+        arg: tuple[type[BaseException], BaseException, TracebackType | None],
+    ) -> None:
+        """
+        Record a function exception event.
+        """
+        exception_type, exception, _ = arg
+
+        self.recorder.record(
+            Event(
+                event_type=EventType.EXCEPTION,
+                name=frame.f_code.co_name,
+                source=SourceLocation(
+                    file=Path(frame.f_code.co_filename),
+                    line=frame.f_lineno,
+                    function=frame.f_code.co_name,
+                ),
+                metadata={
+                    "exception_type": exception_type.__name__,
+                    "exception_message": str(exception),
                 },
             )
         )
