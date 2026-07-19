@@ -230,3 +230,28 @@ class Tracer:
         Return a shallow copy of a frame's local variables.
         """
         return dict(frame.f_locals)
+
+    def _record_variable_created(
+        self,
+        frame: FrameType,
+        name: str,
+        value: object,
+    ) -> None:
+        """
+        Record a variable creation event.
+        """
+        self.recorder.record(
+            Event(
+                event_type=EventType.VARIABLE_CREATED,
+                name=name,
+                source=SourceLocation(
+                    file=Path(frame.f_code.co_filename),
+                    line=frame.f_lineno,
+                    function=frame.f_code.co_name,
+                ),
+                metadata={
+                    "variable": name,
+                    "value": repr(value),
+                },
+            )
+        )
