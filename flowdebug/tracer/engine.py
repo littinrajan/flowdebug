@@ -32,6 +32,7 @@ class Tracer:
     ) -> None:
         self.recorder: Recorder = recorder or MemoryRecorder()
         self.config: TracerConfig = config or TracerConfig()
+        self._previous_locals: dict[int, dict[str, object]] = {}
 
     def start(self) -> None:
         """
@@ -220,3 +221,12 @@ class Tracer:
             and self._should_trace_file(file)
             and self._should_trace_function(function)
         )
+
+    def _get_frame_locals(
+        self,
+        frame: FrameType,
+    ) -> dict[str, object]:
+        """
+        Return a shallow copy of a frame's local variables.
+        """
+        return dict(frame.f_locals)
