@@ -17,14 +17,21 @@ from flowdebug.core import (
 )
 from flowdebug.recorder import MemoryRecorder
 
+from .config import TracerConfig
+
 
 class Tracer:
     """
     Coordinates execution tracing.
     """
 
-    def __init__(self, recorder: Recorder | None = None) -> None:
+    def __init__(
+        self,
+        recorder: Recorder | None = None,
+        config: TracerConfig | None = None,
+    ) -> None:
         self.recorder: Recorder = recorder or MemoryRecorder()
+        self.config: TracerConfig = config or TracerConfig()
 
     def start(self) -> None:
         """
@@ -44,6 +51,12 @@ class Tracer:
         event: str,
         arg: Any,
     ) -> Any:
+        """
+        Trace execution events.
+        """
+        if not self._should_trace(frame):
+            return self._trace
+
         if event == "call":
             self._record_call(frame)
         elif event == "return":
@@ -120,4 +133,69 @@ class Tracer:
                     "exception_message": str(exception),
                 },
             )
+        )
+
+    def _should_trace_module(self, module: str) -> bool:
+        """
+        Determine whether a module should be traced.
+        """
+        include = self.config.include_modules
+        exclude = self.config.exclude_modules
+
+        if include:
+            return module.startswith(include)
+
+        if exclude:
+            return not module.startswith(exclude)
+
+        return True
+
+    def _should_trace_file(self, file: Path) -> bool:
+        """
+        Determine whether a file should be traced.
+        """
+        include = self.config.include_files
+        exclude = self.config.exclude_files
+
+        if include:
+            return any(
+                file == path or file.is_relative_to(path)
+                for path in include
+            )
+
+        if exclude:
+            return not any(
+                file == path or file.is_relative_to(path)
+                for path in exclude
+            )
+
+        return True
+
+    def _should_trace_function(self, function: str) -> bool:
+        """
+        Determine whether a function should be traced.
+        """
+        include = self.config.include_functions
+        exclude = self.config.exclude_functions
+
+        if include:
+            return function.startswith(include)
+
+        if exclude:
+            return not function.startswith(exclude)
+
+        return True
+
+    def _should_trace(self, frame: FrameType) -> bool:
+        """
+        Determine whether a frame should be traced.
+        """
+        module = str(frame.f_globals.get("__name__", ""))
+        file = Path(frame.f_code.co_filename)
+        function = frame.f_code.co_name
+
+        return (
+            self._should_trace_module(module)
+            and self._should_trace_file(file)
+            and self._should_trace_function(function)
         )
