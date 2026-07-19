@@ -59,6 +59,8 @@ class Tracer:
 
         if event == "call":
             self._record_call(frame)
+        elif event == "line":
+            self._record_line(frame)
         elif event == "return":
             self._record_return(frame, arg)
         elif event == "exception":
@@ -73,6 +75,25 @@ class Tracer:
         self.recorder.record(
             Event(
                 event_type=EventType.CALL,
+                name=frame.f_code.co_name,
+                source=SourceLocation(
+                    file=Path(frame.f_code.co_filename),
+                    line=frame.f_lineno,
+                    function=frame.f_code.co_name,
+                ),
+            )
+        )
+
+    def _record_line(
+        self,
+        frame: FrameType,
+    ) -> None:
+        """
+        Record a line execution event.
+        """
+        self.recorder.record(
+            Event(
+                event_type=EventType.LINE,
                 name=frame.f_code.co_name,
                 source=SourceLocation(
                     file=Path(frame.f_code.co_filename),
